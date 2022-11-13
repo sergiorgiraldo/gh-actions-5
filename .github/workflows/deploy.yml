@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Start
         run: |
-          echo "Action running is ${{ env.GITHUB_ACTION }}"
+          echo "Action running is $GITHUB_ACTION"
           echo "List of default env variables available at https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables"
       - name: Get Code
         uses: actions/checkout@v3
