@@ -1,33 +1,43 @@
 name: Deployment
 on:
-  push:
-    branches:
-      - main
-      - dev
+    push:
+        branches:
+            - main
+            - dev
+env:
+  MONGODB_DB_NAME: gh-action
 jobs:
-  test:
-    environment: testing
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get Code
-        uses: actions/checkout@v3
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-deps-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Run server
-        run: npm start & npx wait-on http://127.0.0.1:XYZ
-      - name: Run tests
-        run: npm test
-      - name: Output information
-        run: echo "..."
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Output information
-        run: |        
-          echo "..."
+    test:
+        env:
+          MONGODB_CLUSTER_ADDRESS: cluster0.nnllzq2.mongodb.net
+          MONGODB_USERNAME: sa
+          MONGODB_PASSWORD: sa
+          PORT: 8080
+        environment: testing
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get Code
+              uses: actions/checkout@v3
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+            - name: Install dependencies
+              run: npm ci
+            - name: Run server
+              run: npm start & npx wait-on http://127.0.0.1:$PORT
+            - name: Run tests
+              run: npm test
+            - name: Output information
+              run: echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
+    deploy:
+        needs: test
+        runs-on: ubuntu-latest
+        steps:
+            - name: Output information
+              run: |
+                # this wont run as this env variable is specific to test job
+                echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"  
+                #this is ok as this env variable is global to the workflow
+                echo "MONGODB_DB_NAME: ${{ env.MONGODB_DB_NAME }}"
