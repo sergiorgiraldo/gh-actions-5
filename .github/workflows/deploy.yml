@@ -38,7 +38,5 @@ jobs:
     steps:
       - name: Output information
         run: |
-# this wont run as this env variable is specific to test job
           echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
-#this is ok as this env variable is global to the workflow
           echo "MONGODB_DB_NAME: ${{ env.MONGODB_DB_NAME }}"
